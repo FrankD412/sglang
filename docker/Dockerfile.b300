@@ -23,6 +23,7 @@ COPY . /src
 FROM base AS build-image
 WORKDIR /sgl-workspace
 ARG BRANCH_TYPE
+ARG SGL_KERNEL_WHL_URL
 COPY --from=local_src /src /tmp/local_src
 RUN if [ "$BRANCH_TYPE" = "local" ]; then \
         cp -r /tmp/local_src /sgl-workspace/sglang; \
@@ -45,10 +46,16 @@ ENV CPLUS_INCLUDE_PATH=/usr/local/cuda/include/cccl
 # Make fa_4 run on B300
 ENV CUTE_DSL_ARCH=sm_100f
 
-RUN cd sglang/sgl-kernel/ && \
-    make build && \
-    cd .. && \
-    python3 -m pip install -e "python[all]"
+RUN if [ -n "$SGL_KERNEL_WHL_URL" ]; then \
+        wget -O /tmp/sgl_kernel.whl ${SGL_KERNEL_WHL_URL} && \
+        python3 -m pip install /tmp/sgl_kernel.whl && \
+        rm -rf /tmp/sgl_kernel.whl \
+    else \
+        cd sglang/sgl-kernel/ && \
+        make build && \
+        cd .. && \
+        python3 -m pip install -e "python[all]" \
+    fi
 
 # Modify Triton source file to support cuda 13
 ENV TRITON_DIR=/usr/local/lib/python3.12/dist-packages/triton
