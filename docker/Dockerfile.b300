@@ -49,12 +49,12 @@ ENV CUTE_DSL_ARCH=sm_100f
 RUN if [ -z "$SGL_KERNEL_WHL_URL" ]; then \
         wget -O /tmp/sgl_kernel.whl ${SGL_KERNEL_WHL_URL} ; \
         python3 -m pip install /tmp/sgl_kernel.whl ; \
-        rm -rf /tmp/sgl_kernel.whl ;\
+        rm -rf /tmp/sgl_kernel.whl ; \
     else \
         cd sglang/sgl-kernel/ && \
         make build && \
         cd .. && \
-        python3 -m pip install -e "python[all]" \
+        python3 -m pip install -e "python[all]" ; \
     fi
 
 # Modify Triton source file to support cuda 13
