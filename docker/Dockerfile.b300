@@ -46,10 +46,10 @@ ENV CPLUS_INCLUDE_PATH=/usr/local/cuda/include/cccl
 # Make fa_4 run on B300
 ENV CUTE_DSL_ARCH=sm_100f
 
-RUN if [ -n "$SGL_KERNEL_WHL_URL" ]; then \
-        wget -O /tmp/sgl_kernel.whl ${SGL_KERNEL_WHL_URL} && \
-        python3 -m pip install /tmp/sgl_kernel.whl && \
-        rm -rf /tmp/sgl_kernel.whl \
+RUN if [ -z "$SGL_KERNEL_WHL_URL" ]; then \
+        wget -O /tmp/sgl_kernel.whl ${SGL_KERNEL_WHL_URL} ; \
+        python3 -m pip install /tmp/sgl_kernel.whl ; \
+        rm -rf /tmp/sgl_kernel.whl ;\
     else \
         cd sglang/sgl-kernel/ && \
         make build && \
